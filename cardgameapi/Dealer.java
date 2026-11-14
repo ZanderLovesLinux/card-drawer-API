@@ -49,18 +49,29 @@ public class Dealer extends Playables {
     }
 
     /**
+     * This function (Manual deal) lets you manually add a cards' value to a
+     * players' hand.
+     * 
+     * @param card   the card as an int which will be added to the players' hand
+     * @param player the player whos' hand to add the card to
+     */
+    public void manDeal(int card, Player player) {
+        hands.manDeal(card, player);
+    }
+
+    /**
      * This deal just needs a count and returns a list of strings (the cards,
      * returns this format to save memory)
      * 
      * @param count the amount of cards and the size of the list it returns
      */
-    protected String[] deal(int count) {
+    public int[] deal(int count) {
         return hands.deal(count);
     }
 
     /**
-     * Deals to all players. Meant to be run by the dealer, since the final step
-     * adds to the runner's hand.
+     * Dealer's method to to all players. Meant to be run by the dealer, since the
+     * final step adds to the runner's hand.
      * 
      * @param count the number of cards to deal
      */
@@ -71,67 +82,8 @@ public class Dealer extends Playables {
 
         // enhanced for loop
         // I manually did this because I didn't want to import collections for one thing
-        for (String i : hands.deal(count)) {
+        for (int i : hands.deal(count)) {
             this.hand.add(i);
         }
     }
-
-    // custom automatic get card value for the dealer since it shouldn't play
-    @Override
-    public int getCardValue(String theCard, boolean checkForAce) throws IllegalArgumentException {
-        String binString;
-        int value = Integer.parseInt(theCard);
-
-        // It's a universal parser now, since every card is forced to 7 bits value
-        binString = Integer.toBinaryString(value).substring(3);
-
-        // parses string with radix 2 to convert binary to normal number
-        int number = Integer.parseInt(binString, 2);
-
-        if (number == 1) {
-            // creates temporary hand without aces
-            ArrayList<String> tmpList = new ArrayList<>(hand);
-            for (String i : tmpList) {
-                int x = Integer.parseInt(i);
-                // all of the values of aces
-                if (x == 65 || x == 81 || x == 97 || x == 113) {
-                    tmpList.remove(i);
-                }
-            }
-            int tmpValue = 0;
-            for (String i : tmpList) {
-                tmpValue = tmpValue + getCardValue(i, true);
-            }
-
-            // protects it from going over
-            if (tmpValue > 10) {
-                return 1;
-            } else {
-                return 11;
-            }
-
-        } else if (number < 11) {
-            return number;
-        } else {
-            return switch (number) {
-                case 11 -> 10;
-                case 12 -> 10;
-                case 13 -> 10;
-                default -> throw new IllegalArgumentException(
-                        "The card was not correctly parsed in getCardValue; it had a value other than the allowed ones. Number is "
-                                + number);
-            };
-        }
-    }
-
-    // just goes through the hand and gets the value of every card
-    @Override
-    public int getHandValue() {
-        int value = 0;
-        for (int i = 0; i < hand.size(); i++) {
-            value = value + getCardValue(hand.get(i), true);
-        }
-        return value;
-    }
-
 }

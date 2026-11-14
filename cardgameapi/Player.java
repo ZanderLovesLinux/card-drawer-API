@@ -16,13 +16,16 @@ public class Player extends Playables {
         this.name = name;
     }
 
-    //getter and setter for the name
+    // getter and setter for the name
     public String getName() {
         return this.name;
     }
 
-    /** Sets the name of the player
-     * @param toSet what to set the name to **/
+    /**
+     * Sets the name of the player
+     * 
+     * @param toSet what to set the name to
+     **/
     public void setName(String toSet) {
         this.name = toSet;
     }

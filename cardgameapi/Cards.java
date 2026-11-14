@@ -8,10 +8,10 @@ public class Cards {
 
     // the deck has all the current cards and is static because it should belong to
     // the board, not a dealer or a player
-    static ArrayList<String> deck = new ArrayList<>();
+    static ArrayList<Integer> deck = new ArrayList<>();
 
     // global scanner everyone uses
-    public static Scanner scanner = new Scanner(System.in);
+    public static final Scanner scanner = new Scanner(System.in);
 
     // static for optimization
     Random rStatic = new Random();
@@ -51,7 +51,7 @@ public class Cards {
 
     // shuffle isn't static because it needs to be called by dealer objects
     protected void shuffle() {
-        ArrayList<String> tempDeck = new ArrayList<>();
+        ArrayList<Integer> tempDeck = new ArrayList<>();
 
         /*
          * We add 64 for the parsing later. It marks the start of the card and can be
@@ -62,14 +62,14 @@ public class Cards {
 
         // i added as strings because arraylists hate ints for some reason.
         for (int i : allCards) {
-            tempDeck.add(Integer.toString(i));
-        }   
+            tempDeck.add(i);
+        }
 
         // didnt use an enhanced for loop because it needs to go in a random order
-        String toAdd;
+        int toAdd;
         deck.clear();
         for (int i = 0; i < allCards.length; i++) {
-            
+
             int deckIndex = rStatic.nextInt(0, tempDeck.size());
             toAdd = tempDeck.get(deckIndex);
             tempDeck.remove(deckIndex);
@@ -81,17 +81,32 @@ public class Cards {
     /*
      * this will be inherited by dealer, it deals count cards by taking cards off
      * the top of the deck. this assumes a shuffled deck. It deals from the top of
-     * the deck
+     * the deck. I use an int[] instead of ArrayList<Integer> because I want to make
+     * this more efficient where I can
      */
-
-    // TODO: Overhaul this deal system to use a list of strings
     protected void deal(int count, Player thePlayer) {
-        ArrayList<String> drawnCards = new ArrayList<>();
+        int[] drawnCards = new int[count];
         for (int i = 0; i < count; i++) {
-            drawnCards.add(deck.get(0));
+            drawnCards[i] = (deck.get(0));
             deck.remove(0);
         }
-        thePlayer.hand.addAll(drawnCards);
+        // I do it manually because idw import collections for one thing
+        for (int i : drawnCards) {
+            thePlayer.hand.add(i);
+        }
+
+    }
+
+    /**
+     * just a default method that deals to all the players run by the table; table
+     * has no hand
+     * 
+     * @param count how many cards to deal
+     */
+    protected void dealAll(int count) {
+        for (Player i : players) {
+            deal(count, i);
+        }
     }
 
     /*
@@ -101,9 +116,9 @@ public class Cards {
      * to rework a bunch of stuff for a little bit of savings. I'll probably do that
      * in a future patch
      */
-    protected String[] deal(int count) {
+    protected int[] deal(int count) {
         // formatting makes dealing weird if i don't add 1
-        String[] drawnCards = new String[count];
+        int[] drawnCards = new int[count];
         // used a normal list to be more memory efficient
 
         for (int i = 0; i < count; i++) {
@@ -111,6 +126,17 @@ public class Cards {
             deck.remove(0);
         }
         return drawnCards;
+    }
+
+    /**
+     * This function (Manual deal) lets you manually add a cards' value to a
+     * players' hand.
+     * 
+     * @param card   the card as an int which will be added to the players' hand
+     * @param player the player whos' hand to add the card to
+     */
+    protected void manDeal(int card, Player player) {
+        player.hand.add(card);
     }
 
 }
