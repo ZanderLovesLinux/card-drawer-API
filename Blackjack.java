@@ -169,12 +169,9 @@ public class Blackjack {
         table.playerPrompt();
         final Player[] gamePlayers = table.initPlayers().clone();
 
-        System.out.println("Debug lines 156 next few predealt");
         // shuffles and deals
         dealer.shuffle();
-        System.out.println("shuffled");
         dealer.dealAll(2);
-        System.out.println("Debug line 159 blackjack dealt");
 
         /*
          * The main loop. While nobody has won, it prints the dealer's visible card at
